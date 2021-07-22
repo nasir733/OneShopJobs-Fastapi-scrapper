@@ -29,7 +29,9 @@ origins = [
 async def getJobs():
     return await Jobs_Pydantic.from_queryset(Jobs.all())
 
-
+@app.get("/")
+async def index():
+    return {"message": "Hello World"}
 @app.get("/create-category")
 async def createCategory():
     return await JobCategory.create(name="Python")
