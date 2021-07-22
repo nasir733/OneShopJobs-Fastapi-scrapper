@@ -57,7 +57,7 @@ async def startAsyncScrapper():
 register_tortoise(
     app,
     # db_url='postgres://postgres:24242424@database-1.cgflmpcc3zf6.us-east-2.rds.amazonaws.com:5432/webscrapper',
-    db_url=f'postgres://{config["USER"] or os.environ.get("USER")}:{config["PASSWORD"] or os.environ.get("PASSWORD")}@{config["HOST"] or os.environ.get("HOST")}:5432/{config["NAME"] or os.environ.get("NAME")}',
+    db_url=f'postgres://{ os.environ.get("USER")}:{ os.environ.get("PASSWORD")}@{ os.environ.get("HOST")}:5432/{ os.environ.get("NAME")}',
     modules={'models': ['main']},
     generate_schemas=True,
     add_exception_handlers=True
