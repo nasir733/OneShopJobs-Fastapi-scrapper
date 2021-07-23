@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI,BackgroundTasks
 from pydantic import BaseModel
 from tortoise import fields
 from tortoise.models import Model
@@ -6,6 +6,7 @@ from tortoise.contrib.fastapi import register_tortoise
 from tortoise.contrib.pydantic import pydantic_model_creator
 from stackoverflowscrapper import extract_jobs
 from fastapi.responses import JSONResponse
+
 import time
 import os
 import asyncio
@@ -30,7 +31,7 @@ async def getJobs():
     return await Jobs_Pydantic.from_queryset(Jobs.all())
 
 @app.get("/")
-async def index():
+async def index(background_tasks: BackgroundTasks):
     return {"message": "Hello World"}
 @app.get("/create-category")
 async def createCategory():
@@ -38,6 +39,11 @@ async def createCategory():
 
 
 @app.get("/scrape-stackoverflow")
+async def scrapeStackOverflow(background_tasks: BackgroundTasks):
+    background_tasks.add_task(startAsyncScrapper)
+    return {"message": "the scrapping has started"}
+
+
 async def startAsyncScrapper():
     print("hello from stackoverflow jobs section")
 
@@ -58,7 +64,7 @@ async def startAsyncScrapper():
 
 register_tortoise(
     app,
-    # db_url='postgres://postgres:24242424@database-1.cgflmpcc3zf6.us-east-2.rds.amazonaws.com:5432/webscrapper',
+    db_url='postgres://postgres:24242424@database-1.cgflmpcc3zf6.us-east-2.rds.amazonaws.com:5432/webscrapper',
     db_url=f'postgres://{ os.environ.get("USER")}:{ os.environ.get("PASSWORD")}@{ os.environ.get("HOST")}:5432/{ os.environ.get("NAME")}',
     modules={'models': ['main']},
     generate_schemas=True,
